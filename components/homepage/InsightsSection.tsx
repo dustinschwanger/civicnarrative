@@ -96,7 +96,7 @@ export default function InsightsSection() {
         </div>
 
         <div className="insights-actions">
-          <a href="#" className="btn btn-outline">See All Articles</a>
+          <Link href="/articles" className="btn btn-outline">See All Articles</Link>
         </div>
       </div>
     </section>
