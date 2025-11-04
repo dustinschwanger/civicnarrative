@@ -10,6 +10,7 @@ import {
   DocumentTextIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -22,6 +23,7 @@ interface SocialPost {
   created_at: string
   buffer_post_id: string | null
   article_id: string | null
+  post_url: string | null
   articles?: {
     id: string
     title: string
@@ -212,9 +214,20 @@ export default function SocialPostsList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
+                        {post.status === 'published' && post.post_url && (
+                          <a
+                            href={post.post_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-600 hover:text-green-900 transition-colors p-1 rounded hover:bg-green-50"
+                            title="View post on platform"
+                          >
+                            <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+                          </a>
+                        )}
                         <button
                           onClick={() => onEdit(post)}
-                          className="text-blue-600 hover:text-blue-900 transition-colors p-1 rounded hover:bg-blue-50"
+                          className="text-blue-600 hover:text-blue-900 transition-colors p-1 rounded hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Edit post"
                           disabled={post.status === 'published'}
                         >
@@ -222,7 +235,7 @@ export default function SocialPostsList({
                         </button>
                         <button
                           onClick={() => onDelete(post)}
-                          className="text-red-600 hover:text-red-900 transition-colors p-1 rounded hover:bg-red-50"
+                          className="text-red-600 hover:text-red-900 transition-colors p-1 rounded hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Delete post"
                           disabled={post.status === 'published'}
                         >

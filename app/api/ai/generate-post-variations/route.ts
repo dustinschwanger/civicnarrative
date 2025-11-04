@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    const { content, title, currentPosts } = await request.json()
+    const { content, title, currentPosts, platforms, userPrompt } = await request.json()
 
     if (!content && !title) {
       return NextResponse.json(
@@ -16,18 +16,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Default to all platforms if none specified
+    const selectedPlatforms = platforms && platforms.length > 0
+      ? platforms
+      : ['twitter', 'facebook', 'linkedin', 'instagram']
+
+    const postsPerPlatform = 5
+
     // Build context about what's already been generated
-    const existingContext = currentPosts
-      ? `\n\nNOTE: These posts have already been generated, create DIFFERENT angles:\n${currentPosts.map((p: any) => `- ${p.platform}: ${p.content.substring(0, 100)}`).join('\n')}`
+    const existingContext = currentPosts && currentPosts.length > 0
+      ? `\n\nNOTE: These posts have already been generated, create DIFFERENT angles:\n${currentPosts.map((p: any) => `- ${p.platform}: ${p.text.substring(0, 100)}`).join('\n')}`
+      : ''
+
+    // Add user prompt context if provided
+    const userContext = userPrompt
+      ? `\n\nUSER REQUEST: ${userPrompt}\nPlease incorporate this direction into the posts.`
       : ''
 
     const prompt = `You are a social media expert who creates engaging, diverse content for multiple platforms.
 
 Article Title: ${title || 'Not provided'}
 Article Content: ${content}
-${existingContext}
+${existingContext}${userContext}
 
-Generate 8 unique social media post variations with DIFFERENT approaches and angles. Each should feel distinct and target different audiences or aspects of the content.
+Generate ${postsPerPlatform} unique social media posts for EACH of these platforms: ${selectedPlatforms.join(', ')}.
+Total posts to generate: ${postsPerPlatform * selectedPlatforms.length}
+
+Each post should use a DIFFERENT approach and angle. Make them feel distinct and target different audiences or aspects of the content.
 
 **Angle Types to Use (mix these up):**
 1. Question Hook - Start with a compelling question
@@ -48,13 +63,13 @@ Generate 8 unique social media post variations with DIFFERENT approaches and ang
 - Instagram: Visual-focused, 3-5 hashtags, max 2200 chars
 
 **Requirements:**
+- Generate exactly ${postsPerPlatform} posts for each platform
 - Each post must use a DIFFERENT angle
 - Vary the opening hooks significantly
-- Mix up the platforms recommended
 - Include relevant hashtags
 - Make each one shareable and engaging
 
-Return a JSON array with exactly 8 variations:
+Return a JSON array with exactly ${postsPerPlatform * selectedPlatforms.length} variations:
 [
   {
     "angle": "Question Hook",
@@ -78,7 +93,7 @@ Return a JSON array with exactly 8 variations:
         },
       ],
       temperature: 0.8, // Higher for more creativity
-      max_tokens: 2500,
+      max_tokens: 4000,
     })
 
     const responseText = completion.choices[0]?.message?.content || ''
@@ -95,19 +110,19 @@ Return a JSON array with exactly 8 variations:
       console.error('Response was:', responseText)
 
       // Fallback: generate basic variations
-      variations = generateFallbackVariations(title || '', content)
+      variations = generateFallbackVariations(title || '', content, selectedPlatforms, postsPerPlatform)
     }
 
     // Ensure each variation has required fields
     variations = variations.map((v: any, index: number) => ({
       angle: v.angle || `Variation ${index + 1}`,
-      platform: v.platform || 'twitter',
+      platform: v.platform || selectedPlatforms[index % selectedPlatforms.length],
       text: v.text || v.content || '',
       rationale: v.rationale || 'Engaging approach for this content',
     }))
 
     return NextResponse.json({
-      variations: variations.slice(0, 10), // Max 10 variations
+      variations,
     })
   } catch (error: any) {
     console.error('Error generating post variations:', error)
@@ -119,39 +134,54 @@ Return a JSON array with exactly 8 variations:
 }
 
 // Fallback function if AI parsing fails
-function generateFallbackVariations(title: string, content: string) {
+function generateFallbackVariations(
+  title: string,
+  content: string,
+  platforms: string[],
+  postsPerPlatform: number
+) {
   const excerpt = content.substring(0, 200)
+  const variations = []
 
-  return [
+  const angleTemplates = [
     {
       angle: 'Question Hook',
-      platform: 'twitter',
-      text: `${title}\n\nWhat are your thoughts? 🤔`,
+      getText: (p: string) => `${title}\n\nWhat are your thoughts? 🤔`,
       rationale: 'Engages audience with direct question',
     },
     {
       angle: 'Direct Statement',
-      platform: 'facebook',
-      text: `${title}\n\n${excerpt}...\n\n#civictech #localgov`,
-      rationale: 'Clear and informative for Facebook audience',
+      getText: (p: string) => `${title}\n\n${excerpt}...\n\n#civictech #localgov`,
+      rationale: 'Clear and informative',
     },
     {
       angle: 'Professional Insight',
-      platform: 'linkedin',
-      text: `${title}\n\nKey insights:\n• ${excerpt.substring(0, 100)}\n\n#PublicSector #Government`,
-      rationale: 'Professional tone for LinkedIn network',
+      getText: (p: string) => `${title}\n\nKey insights:\n• ${excerpt.substring(0, 100)}\n\n#PublicSector #Government`,
+      rationale: 'Professional tone',
     },
     {
       angle: 'Visual Focus',
-      platform: 'instagram',
-      text: `${title} ✨\n\n${excerpt.substring(0, 100)}...\n\n#civictech #community #innovation`,
-      rationale: 'Visual and engaging for Instagram',
+      getText: (p: string) => `${title} ✨\n\n${excerpt.substring(0, 100)}...\n\n#civictech #community #innovation`,
+      rationale: 'Visual and engaging',
     },
     {
       angle: 'Call to Action',
-      platform: 'twitter',
-      text: `${title}\n\nRead more about this important topic →`,
+      getText: (p: string) => `${title}\n\nRead more about this important topic →`,
       rationale: 'Direct CTA for engagement',
     },
   ]
+
+  for (const platform of platforms) {
+    for (let i = 0; i < postsPerPlatform && i < angleTemplates.length; i++) {
+      const template = angleTemplates[i]
+      variations.push({
+        angle: template.angle,
+        platform,
+        text: template.getText(platform),
+        rationale: template.rationale,
+      })
+    }
+  }
+
+  return variations
 }

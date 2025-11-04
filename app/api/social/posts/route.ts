@@ -113,6 +113,7 @@ export async function POST(request: NextRequest) {
       articleId,
       imageUrl,
       link,
+      mediaUrls,
     } = body
 
     // Validate required fields
@@ -146,8 +147,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Add optional fields
+    const allMediaUrls = []
     if (imageUrl) {
-      postData.media_urls = [imageUrl]
+      allMediaUrls.push(imageUrl)
+    }
+    if (mediaUrls && Array.isArray(mediaUrls)) {
+      allMediaUrls.push(...mediaUrls)
+    }
+    if (allMediaUrls.length > 0) {
+      postData.media_urls = allMediaUrls
     }
 
     if (link) {
@@ -171,6 +179,9 @@ export async function POST(request: NextRequest) {
         article_id: articleId || null,
         buffer_post_id: latePost.id, // LATE post ID
         status: scheduledFor ? 'scheduled' : 'published',
+        image_url: imageUrl || null,
+        link: link || null,
+        media_urls: mediaUrls || [],
       })
       .select()
       .single()

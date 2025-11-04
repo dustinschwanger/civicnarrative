@@ -12,6 +12,8 @@ import {
   ExclamationCircleIcon,
   DocumentTextIcon,
 } from '@heroicons/react/24/outline'
+import AdminLayout from '@/components/admin/AdminLayout'
+import { withAdminAuth } from '@/contexts/AdminContext'
 import SocialFilters from '@/components/admin/social/SocialFilters'
 import SocialPostsList from '@/components/admin/social/SocialPostsList'
 import SocialCalendar from '@/components/admin/social/SocialCalendar'
@@ -35,7 +37,7 @@ interface Stats {
 
 type TabType = 'list' | 'calendar' | 'create' | 'ai'
 
-export default function SocialMediaPage() {
+function SocialMediaPage() {
   const [activeTab, setActiveTab] = useState<TabType>('list')
   const [stats, setStats] = useState<Stats | null>(null)
   const [loadingStats, setLoadingStats] = useState(true)
@@ -104,17 +106,18 @@ export default function SocialMediaPage() {
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Social Media Management</h1>
-          <p className="text-gray-600 mt-1">Manage and schedule your social media posts</p>
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Social Media Management</h1>
+            <p className="text-gray-600 mt-1">Manage and schedule your social media posts</p>
+          </div>
         </div>
-      </div>
 
-      {/* Stats Dashboard */}
-      {!loadingStats && stats && (
+        {/* Stats Dashboard */}
+        {!loadingStats && stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Posts */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -160,10 +163,10 @@ export default function SocialMediaPage() {
             </div>
           </div>
         </div>
-      )}
+        )}
 
-      {/* Platform Breakdown */}
-      {!loadingStats && stats && (
+        {/* Platform Breakdown */}
+        {!loadingStats && stats && (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-4">By Platform</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -197,73 +200,76 @@ export default function SocialMediaPage() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                {tab.label}
-              </button>
-            )
-          })}
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      <div className="space-y-6">
-        {activeTab === 'list' && (
-          <>
-            <SocialFilters
-              platforms={platforms}
-              statuses={statuses}
-              search={search}
-              startDate={startDate}
-              endDate={endDate}
-              onPlatformsChange={setPlatforms}
-              onStatusesChange={setStatuses}
-              onSearchChange={setSearch}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-              onClearFilters={clearFilters}
-            />
-            <SocialPostsList
-              platforms={platforms}
-              statuses={statuses}
-              search={search}
-              startDate={startDate}
-              endDate={endDate}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </>
         )}
 
-        {activeTab === 'calendar' && <SocialCalendar />}
+        {/* Tabs */}
+        <div className="border-b border-gray-200">
+          <nav className="flex space-x-8">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  {tab.label}
+                </button>
+              )
+            })}
+          </nav>
+        </div>
 
-        {activeTab === 'create' && (
-          <CreatePostForm
-            onSuccess={() => {
-              fetchStats()
-              setActiveTab('list')
-            }}
-          />
-        )}
+        {/* Tab Content */}
+        <div className="space-y-6">
+          {activeTab === 'list' && (
+            <>
+              <SocialFilters
+                platforms={platforms}
+                statuses={statuses}
+                search={search}
+                startDate={startDate}
+                endDate={endDate}
+                onPlatformsChange={setPlatforms}
+                onStatusesChange={setStatuses}
+                onSearchChange={setSearch}
+                onStartDateChange={setStartDate}
+                onEndDateChange={setEndDate}
+                onClearFilters={clearFilters}
+              />
+              <SocialPostsList
+                platforms={platforms}
+                statuses={statuses}
+                search={search}
+                startDate={startDate}
+                endDate={endDate}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </>
+          )}
 
-        {activeTab === 'ai' && <ContentIdeasGenerator />}
+          {activeTab === 'calendar' && <SocialCalendar />}
+
+          {activeTab === 'create' && (
+            <CreatePostForm
+              onSuccess={() => {
+                fetchStats()
+                setActiveTab('list')
+              }}
+            />
+          )}
+
+          {activeTab === 'ai' && <ContentIdeasGenerator />}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }
+
+export default withAdminAuth(SocialMediaPage)
