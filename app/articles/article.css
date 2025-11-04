@@ -1,0 +1,158 @@
+/* Article Page Styles */
+
+.article-header {
+  background: linear-gradient(135deg, #005F83 0%, #008B9A 100%);
+  padding: 4rem 2rem 3rem 2rem;
+  color: white;
+}
+
+.article-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.article-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.article-category {
+  background-color: #88DC7F;
+  color: #1D3557;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.article-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.article-excerpt {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  line-height: 1.6;
+}
+
+.article-content-wrapper {
+  background-color: white;
+  padding: 3rem 2rem;
+}
+
+.article-featured-image {
+  max-width: 1000px;
+  margin: -3rem auto 3rem auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.article-featured-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.article-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3 {
+  color: #005F83;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.article-content h1 {
+  font-size: 2em;
+}
+
+.article-content h2 {
+  font-size: 1.5em;
+}
+
+.article-content h3 {
+  font-size: 1.25em;
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+  font-size: 1.125rem;
+}
+
+.article-content ul,
+.article-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+  line-height: 1.8;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.article-content blockquote {
+  border-left: 4px solid #00B695;
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-style: italic;
+  color: #555;
+}
+
+.article-content a {
+  color: #00B695;
+  text-decoration: underline;
+}
+
+.article-content a:hover {
+  color: #008B9A;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 2rem 0;
+  border-radius: 8px;
+}
+
+.article-content pre {
+  background: #f4f4f4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+.article-content code {
+  background: #f4f4f4;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  opacity: 0.9;
+}
+
+.back-link:hover {
+  opacity: 1;
+}
