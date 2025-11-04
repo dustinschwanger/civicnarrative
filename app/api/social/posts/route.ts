@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
         content,
         scheduled_for: scheduledFor || null,
         article_id: articleId || null,
-        buffer_post_id: latePost.id, // LATE post ID
+        buffer_post_id: latePost.post_id || null, // LATE post ID
         status: scheduledFor ? 'scheduled' : 'published',
         image_url: imageUrl || null,
         link: link || null,
@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       post: dbPost,
-      latePostId: latePost.id,
+      latePostId: latePost.post_id,
     })
   } catch (error: any) {
     console.error('Error in POST /api/social/posts:', error)

@@ -31,16 +31,20 @@ export default function RichTextEditor({
     setShowMediaLibrary(true)
   }
 
-  const insertMedia = (media: MediaFile) => {
+  const insertMedia = (media: MediaFile | MediaFile[]) => {
     const quill = quillRef.current?.getEditor()
     if (quill) {
+      // Handle single file or array
+      const file = Array.isArray(media) ? media[0] : media
+      if (!file) return
+
       const range = quill.getSelection(true)
-      if (media.file_type === 'image') {
-        quill.insertEmbed(range.index, 'image', media.file_url)
+      if (file.file_type === 'image') {
+        quill.insertEmbed(range.index, 'image', file.file_url)
       } else {
-        quill.insertText(range.index, media.filename)
-        quill.setSelection(range.index, media.filename.length)
-        quill.format('link', media.file_url)
+        quill.insertText(range.index, file.filename)
+        quill.setSelection(range.index, file.filename.length)
+        quill.format('link', file.file_url)
       }
     }
     setShowMediaLibrary(false)
@@ -97,6 +101,7 @@ export default function RichTextEditor({
     <>
       <div className="rich-text-editor" style={{ minHeight: height }}>
         <ReactQuill
+          // @ts-ignore - ReactQuill ref typing issue with dynamic import
           ref={quillRef}
           theme="snow"
           value={value || ''}

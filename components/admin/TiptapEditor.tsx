@@ -61,9 +61,11 @@ export default function TiptapEditor({
     }
   }, [value, editor])
 
-  const addImage = (media: MediaFile) => {
-    if (editor && media.file_type === 'image') {
-      editor.chain().focus().setImage({ src: media.file_url }).run()
+  const addImage = (media: MediaFile | MediaFile[]) => {
+    // Handle single file or array
+    const file = Array.isArray(media) ? media[0] : media
+    if (editor && file && file.file_type === 'image') {
+      editor.chain().focus().setImage({ src: file.file_url }).run()
     }
     setShowMediaLibrary(false)
   }
