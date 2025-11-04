@@ -29,7 +29,7 @@
 }
 
 .article-title {
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
   font-weight: 800;
   margin: 0 0 1rem 0;
   line-height: 1.2;
@@ -75,15 +75,15 @@
 }
 
 .article-content h1 {
-  font-size: 2em;
-}
-
-.article-content h2 {
   font-size: 1.5em;
 }
 
-.article-content h3 {
+.article-content h2 {
   font-size: 1.25em;
+}
+
+.article-content h3 {
+  font-size: 1.125em;
 }
 
 .article-content p {
