@@ -55,11 +55,11 @@ h1 {
 }
 
 body:not(.admin-page) h2 {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
 }
 
 body:not(.admin-page) h3 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
 }
 
 p {
@@ -1086,6 +1086,9 @@ button.nav-link {
     position: relative;
     overflow: hidden;
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .insight-accent {
@@ -1107,6 +1110,7 @@ button.nav-link {
     color: var(--navy);
     line-height: 1.7;
     margin-bottom: 1.5rem;
+    flex-grow: 1;
 }
 
 .insight-link {
@@ -1119,7 +1123,8 @@ button.nav-link {
 .insight-card-link {
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    height: 100%;
     cursor: pointer;
 }
 
